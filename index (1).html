@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Корни с чередованием -РАСТ-/-РАЩ-/-РОС-</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f6f0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: #2d5016;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        /* ====== ИГРА 1: УГАДАЙ КОРЕНЬ ====== */
+        .game-section {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        
+        .game-title {
+            font-size: 22px;
+            color: #2d5016;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .score-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px 20px;
+            background: #f0f7e6;
+            border-radius: 10px;
+        }
+        
+        .score-item {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        .score-item .label { color: #666; font-weight: normal; }
+        .score-item .value { color: #2d5016; }
+        
+        .word-card {
+            background: #f8f6f0;
+            border: 2px solid #c4d4a8;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 3px;
+        }
+        
+        .hint {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .option-btn {
+            padding: 15px 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #c4d4a8;
+            border-radius: 10px;
+            background: white;
+            color: #2d5016;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option-btn:hover {
+            background: #e8f0d8;
+            border-color: #8db04e;
+        }
+        
+        .option-btn.correct {
+            background: #4a9c2d;
+            color: white;
+            border-color: #4a9c2d;
+        }
+        
+        .option-btn.wrong {
+            background: #c44;
+            color: white;
+            border-color: #c44;
+        }
+        
+        .option-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        .feedback {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 16px;
+            display: none;
+        }
+        
+        .feedback.show { display: block; }
+        .feedback.correct { background: #e8f5e0; color: #2d5016; }
+        .feedback.wrong { background: #fce0e0; color: #8b2020; }
+        
+        .next-btn {
+            display: none;
+            margin: 0 auto;
+            padding: 12px 40px;
+            font-size: 16px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        
+        .next-btn.show { display: block; }
+        .next-btn:hover { background: #3d6b1f; }
+        
+        /* ====== ИГРА 2: СОПОСТАВЬ СЛОВА ====== */
+        .match-game {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .match-column {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .match-item {
+            padding: 12px 16px;
+            background: #f0f7e6;
+            border: 2px solid #c4d4a8;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            font-size: 15px;
+            transition: all 0.2s;
+            user-select: none;
+        }
+        
+        .match-item:hover { border-color: #8db04e; }
+        .match-item.selected { border-color: #2d5016; background: #e8f0d8; }
+        .match-item.matched { background: #d4edbc; border-color: #4a9c2d; opacity: 0.7; }
+        
+        .match-label {
+            text-align: center;
+            font-weight: bold;
+            color: #2d5016;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        /* ====== ПРАВИЛО ====== */
+        .rule-box {
+            background: #f0f7e6;
+            border-left: 4px solid #8db04e;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin-bottom: 20px;
+        }
+        
+        .rule-box h3 {
+            color: #2d5016;
+            margin-bottom: 12px;
+        }
+        
+        .rule-box ul {
+            margin-left: 20px;
+            color: #444;
+            line-height: 1.8;
+        }
+        
+        .rule-box .exception {
+            color: #8b4513;
+            font-weight: bold;
+        }
+        
+        /* ====== ТАБЛИЦА ====== */
+        .roots-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .roots-table th {
+            background: #2d5016;
+            color: white;
+            padding: 14px;
+            text-align: left;
+        }
+        
+        .roots-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .roots-table tr:nth-child(even) { background: #f8f6f0; }
+        
+        .root-rast { color: #4a9c2d; font-weight: bold; }
+        .root-rash { color: #d4a017; font-weight: bold; }
+        .root-ros { color: #8b4513; font-weight: bold; }
+        
+        /* ====== ТАБУЛИЦА РЕЗУЛЬТАТОВ ====== */
+        .results {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .results.show { display: block; }
+        
+        .results h2 {
+            color: #2d5016;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        
+        .results-score {
+            font-size: 48px;
+            color: #4a9c2d;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        
+        .results-message {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        
+        .restart-btn {
+            padding: 14px 50px;
+            font-size: 18px;
+            background: #2d5016;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .restart-btn:hover { background: #3d6b1f; }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .tab-btn {
+            padding: 10px 24px;
+            border: 2px solid #c4d4a8;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            color: #2d5016;
+        }
+        
+        .tab-btn.active {
+            background: #2d5016;
+            color: white;
+            border-color: #2d5016;
+        }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        @media (max-width: 600px) {
+            .options { grid-template-columns: 1fr; }
+            .match-game { grid-template-columns: 1fr; }
+            .word-card { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Корни с чередованием -РАСТ- / -РАЩ- / -РОС-</h1>
+        <p>Интерактивный тренажёр | Русский язык, 6 класс</p>
+    </div>
+    
+    <div class="tabs">
+        <button class="tab-btn active" onclick="showTab('rules')">Правило</button>
+        <button class="tab-btn" onclick="showTab('game1')">Игра «Угадай корень»</button>
+        <button class="tab-btn" onclick="showTab('game2')">Игра «Сопоставь»</button>
+    </div>
+    
+    <!-- ВКЛАДКА: ПРАВИЛО -->
+    <div id="rules" class="tab-content active">
+        <div class="game-section">
+            <div class="rule-box">
+                <h3>Правило написания корней с чередованием</h3>
+                <p style="margin-bottom:15px; color:#444;">В корнях -РАСТ- / -РАЩ- / -РОС- происходит чередование гласных А и О в зависимости от грамматической формы слова:</p>
+                <ul>
+                    <li><span class="root-rast">-РАСТ-</span> — пишется в формах настоящего/будущего времени и в отглагольных существительных: <em>растёт, растение, подрастать, нарастать, разрастаться</em></li>
+                    <li><span class="root-rash">-РАЩ-</span> — пишется перед суффиксами -а-, -и- и в формах причастий/деепричастий: <em>выращивать, подращивать, выращенный</em></li>
+                    <li><span class="root-ros">-РОС-</span> — пишется в формах прошедшего времени и в отглагольных существительных: <em>рос, вырос, рост, заросли, подросток</em></li>
+                </ul>
+                <p class="exception" style="margin-top:15px;">Важные исключения: Ростов (город), Ростислав (имя), ростовщик, отрасль, водоросли, прорастать</p>
+            </div>
+            
+            <table class="roots-table">
+                <tr>
+                    <th>Корень</th>
+                    <th>Когда пишется</th>
+                    <th>Примеры</th>
+                </tr>
+                <tr>
+                    <td class="root-rast">-РАСТ-</td>
+                    <td>Наст. время, буд. время, существительные</td>
+                    <td>растёт, растение, вырасти, подрастать</td>
+                </tr>
+                <tr>
+                    <td class="root-rash">-РАЩ-</td>
+                    <td>Перед суффиксами -а-, -и-, причастия</td>
+                    <td>выращивать, подращивать, выращенный</td>
+                </tr>
+                <tr>
+                    <td class="root-ros">-РОС-</td>
+                    <td>Прош. время, существительные</td>
+                    <td>рос, вырос, рост, заросли, подросток</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <!-- ВКЛАДКА: ИГРА 1 -->
+    <div id="game1" class="tab-content">
+        <div class="game-section">
+            <h2 class="game-title">Игра «Угадай корень»</h2>
+            
+            <div id="game1-content">
+                <div class="score-bar">
+                    <div class="score-item"><span class="label">Вопрос:</span> <span class="value" id="q-num">1</span> / <span id="q-total">10</span></div>
+                    <div class="score-item"><span class="label">Правильно:</span> <span class="value" id="score">0</span></div>
+                </div>
+                
+                <div class="hint" id="hint">Выберите правильный корень в слове:</div>
+                
+                <div class="word-card" id="word-display">В..РАЩИВАТЬ</div>
+                
+                <div class="options" id="options">
+                    <button class="option-btn" onclick="checkAnswer(0)">-РАСТ-</button>
+                    <button class="option-btn" onclick="checkAnswer(1)">-РАЩ-</button>
+                    <button class="option-btn" onclick="checkAnswer(2)">-РОС-</button>
+                </div>
+                
+                <div class="feedback" id="feedback"></div>
+                <button class="next-btn" id="next-btn" onclick="nextQuestion()">Следующее слово</button>
+            </div>
+            
+            <div class="results" id="results">
+                <h2>Игра завершена!</h2>
+                <div class="results-score" id="final-score">0/10</div>
+                <div class="results-message" id="results-message"></div>
+                <button class="restart-btn" onclick="restartGame()">Играть снова</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- ВКЛАДКА: ИГРА 2 -->
+    <div id="game2" class="tab-content">
+        <div class="game-section">
+            <h2 class="game-title">Игра «Сопоставь слово и корень»</h2>
+            
+            <div class="score-bar">
+                <div class="score-item"><span class="label">Сопоставлено:</span> <span class="value" id="match-score">0</span> / 8</div>
+            </div>
+            
+            <div class="match-game" id="match-game">
+                <div>
+                    <div class="match-label">Слова</div>
+                    <div class="match-column" id="words-col"></div>
+                </div>
+                <div>
+                    <div class="match-label">Корни</div>
+                    <div class="match-column" id="roots-col"></div>
+                </div>
+            </div>
+            
+            <div class="results" id="match-results">
+                <h2>Отлично!</h2>
+                <div class="results-score">Все пары собраны!</div>
+                <div class="results-message">Вы отлично знаете корни с чередованием!</div>
+                <button class="restart-btn" onclick="restartMatchGame()">Играть снова</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ====== ДАННЫЕ ИГРЫ 1 ======
+        const questions = [
+            { word: "В..РАЩИВАТЬ", answer: 1, root: "-РАЩ-", explanation: "Перед суффиксом -ива- пишется -РАЩ-" },
+            { word: "Р..СТЕНИЕ", answer: 0, root: "-РАСТ-", explanation: "Отглагольное существительное — корень -РАСТ-" },
+            { word: "ВЫР..С", answer: 2, root: "-РОС-", explanation: "Форма прошедшего времени — корень -РОС-" },
+            { word: "ПОДР..СТАТЬ", answer: 0, root: "-РАСТ-", explanation: "Инфинитив (форма наст. вр.) — корень -РАСТ-" },
+            { word: "Р..СТ", answer: 2, root: "-РОС-", explanation: "Существительное от глагола 'расти' — корень -РОС-" },
+            { word: "ВЫР..ЩЕННЫЙ", answer: 1, root: "-РАЩ-", explanation: "Причастие с суффиксом -енн- — корень -РАЩ-" },
+            { word: "НАР..СТАНИЕ", answer: 0, root: "-РАСТ-", explanation: "Существительное с суффиксом -ани- — корень -РАСТ-" },
+            { word: "ЗАР..СЛИ", answer: 2, root: "-РОС-", explanation: "Существительное (мн.ч.) — корень -РОС-" },
+            { word: "ПОДР..ЩИВАТЬ", answer: 1, root: "-РАЩ-", explanation: "Перед суффиксом -ива- пишется -РАЩ-" },
+            { word: "ОТР..СЛЬ", answer: 2, root: "-РОС-", explanation: "Исключение — слово отрасль пишется с -О-" }
+        ];
+        
+        let currentQ = 0;
+        let score = 0;
+        let answered = false;
+        
+        function loadQuestion() {
+            answered = false;
+            const q = questions[currentQ];
+            document.getElementById('word-display').textContent = q.word;
+            document.getElementById('q-num').textContent = currentQ + 1;
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('next-btn').className = 'next-btn';
+            
+            const btns = document.querySelectorAll('#options .option-btn');
+            btns.forEach(btn => {
+                btn.className = 'option-btn';
+                btn.disabled = false;
+            });
+        }
+        
+        function checkAnswer(choice) {
+            if (answered) return;
+            answered = true;
+            
+            const q = questions[currentQ];
+            const btns = document.querySelectorAll('#options .option-btn');
+            
+            if (choice === q.answer) {
+                btns[choice].classList.add('correct');
+                score++;
+                document.getElementById('score').textContent = score;
+                document.getElementById('feedback').textContent = 'Верно! ' + q.explanation;
+                document.getElementById('feedback').className = 'feedback show correct';
+            } else {
+                btns[choice].classList.add('wrong');
+                btns[q.answer].classList.add('correct');
+                document.getElementById('feedback').textContent = 'Неверно. ' + q.explanation;
+                document.getElementById('feedback').className = 'feedback show wrong';
+            }
+            
+            btns.forEach(btn => btn.disabled = true);
+            document.getElementById('next-btn').className = 'next-btn show';
+        }
+        
+        function nextQuestion() {
+            currentQ++;
+            if (currentQ >= questions.length) {
+                showResults();
+            } else {
+                loadQuestion();
+            }
+        }
+        
+        function showResults() {
+            document.getElementById('game1-content').style.display = 'none';
+            document.getElementById('results').className = 'results show';
+            document.getElementById('final-score').textContent = score + '/' + questions.length;
+            
+            if (score === questions.length) {
+                document.getElementById('results-message').textContent = 'Идеальный результат! Вы эксперт!';
+            } else if (score >= 7) {
+                document.getElementById('results-message').textContent = 'Отличный результат! Немного практики — и будет идеально!';
+            } else if (score >= 4) {
+                document.getElementById('results-message').textContent = 'Хороший результат! Повторите правило и попробуйте ещё.';
+            } else {
+                document.getElementById('results-message').textContent = 'Повторите правило и попробуйте ещё раз!';
+            }
+        }
+        
+        function restartGame() {
+            currentQ = 0;
+            score = 0;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('game1-content').style.display = 'block';
+            document.getElementById('results').className = 'results';
+            loadQuestion();
+        }
+        
+        // ====== ДАННЫЕ ИГРЫ 2 ======
+        const matchData = [
+            { word: "РАСТЕНИЕ", root: "-РАСТ-" },
+            { word: "ВЫРОС", root: "-РОС-" },
+            { word: "ВЫРАЩИВАТЬ", root: "-РАЩ-" },
+            { word: "РОСТ", root: "-РОС-" },
+            { word: "ПОДРАСТАТЬ", root: "-РАСТ-" },
+            { word: "ЗАРОСЛИ", root: "-РОС-" },
+            { word: "ВЫРАЩЕННЫЙ", root: "-РАЩ-" },
+            { word: "НАРАСТАТЬ", root: "-РАСТ-" }
+        ];
+        
+        let selectedWord = null;
+        let selectedRoot = null;
+        let matchScore = 0;
+        let matchedPairs = 0;
+        
+        function initMatchGame() {
+            const wordsCol = document.getElementById('words-col');
+            const rootsCol = document.getElementById('roots-col');
+            wordsCol.innerHTML = '';
+            rootsCol.innerHTML = '';
+            
+            matchScore = 0;
+            matchedPairs = 0;
+            document.getElementById('match-score').textContent = '0';
+            document.getElementById('match-results').className = 'results';
+            
+            const shuffledWords = [...matchData].sort(() => Math.random() - 0.5);
+            const shuffledRoots = [...matchData].sort(() => Math.random() - 0.5);
+            
+            shuffledWords.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = 'match-item';
+                div.textContent = item.word;
+                div.dataset.word = item.word;
+                div.onclick = () => selectWord(div);
+                wordsCol.appendChild(div);
+            });
+            
+            shuffledRoots.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = 'match-item';
+                div.textContent = item.root;
+                div.dataset.root = item.root;
+                div.onclick = () => selectRoot(div);
+                rootsCol.appendChild(div);
+            });
+        }
+        
+        function selectWord(el) {
+            if (el.classList.contains('matched')) return;
+            document.querySelectorAll('#words-col .match-item').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedWord = el;
+            checkMatch();
+        }
+        
+        function selectRoot(el) {
+            if (el.classList.contains('matched')) return;
+            document.querySelectorAll('#roots-col .match-item').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedRoot = el;
+            checkMatch();
+        }
+        
+        function checkMatch() {
+            if (!selectedWord || !selectedRoot) return;
+            
+            const wordData = matchData.find(d => d.word === selectedWord.dataset.word);
+            
+            if (wordData.root === selectedRoot.dataset.root) {
+                selectedWord.classList.add('matched');
+                selectedRoot.classList.add('matched');
+                matchScore++;
+                matchedPairs++;
+                document.getElementById('match-score').textContent = matchedPairs;
+            } else {
+                selectedWord.classList.remove('selected');
+                selectedRoot.classList.remove('selected');
+            }
+            
+            selectedWord = null;
+            selectedRoot = null;
+            
+            if (matchedPairs === matchData.length) {
+                setTimeout(() => {
+                    document.getElementById('match-results').className = 'results show';
+                }, 500);
+            }
+        }
+        
+        function restartMatchGame() {
+            initMatchGame();
+        }
+        
+        // ====== ТАБЫ ======
+        function showTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // ====== ИНИЦИАЛИЗАЦИЯ ======
+        loadQuestion();
+        initMatchGame();
+    </script>
+</body>
+</html>
